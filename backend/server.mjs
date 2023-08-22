@@ -13,7 +13,6 @@ const event_categories = ["High Prep", "Med Prep", "Low Prep"];
 const pools_names = ["Peshwas", "Aryans", "Nawabs", "Shauryas", "Kshatriyas"]
 
 console.log(`Port: ${PORT}, mongo URL: ${mongoURL}`);
-console.log(pass)
 
 const app = express();
 app.use(cors());

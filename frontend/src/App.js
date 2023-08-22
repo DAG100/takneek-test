@@ -1,23 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+import {useState, useEffect} from "react";
 
 function App() {
+	const [leaderboard, setLeaderboard] = useState([]);
+	const [refresh, setRefresh] = useState(false); //toggle for refreshing
+	useEffect(async () => {
+		fetch()
+	}, [refresh]);
+	
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="main">
+    	{
+    		leaderboard === "error" 
+    		? <div className="error">Something went wrong. Try refreshing using the button below.</div>
+    		: <div className="leaderboard">
+    			{leaderboard.map(el => (
+    				<div>{el}</div>
+    			))}
+    		</div>
+    	}
     </div>
   );
 }
