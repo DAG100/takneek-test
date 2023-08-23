@@ -3,6 +3,11 @@
 	margin: auto;
 }
 
+.main > * {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
 .container {
 	border: solid 1px #000;
 	height: 100%;
