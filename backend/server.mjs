@@ -3,8 +3,12 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 // import { MongoClient } from "mongodb";
 import mongoose from "mongoose";
+import path from "path";
+import { fileURLToPath } from 'url';
 
 dotenv.config();
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const PORT = process.env.PORT || 5001;
 const pass = process.env.PASS || "test";
@@ -20,6 +24,11 @@ console.log(`Port: ${PORT}, mongo URL: ${mongoURL}`);
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+console.log(process.env)
+
+app.use(express.static("frontend-build/assets"));
+
 
 await mongoose.connect(mongoURL);
 
@@ -53,10 +62,13 @@ const pools_names = Object.keys(eventSchema.obj.poolpoints);
 
 const eventModel = new mongoose.model("Event", eventSchema);
 
-
 app.get("/", (req, res) => {
-	res.send("Test");
-})
+	res.sendFile("index.html", {root: path.join(__dirname,"frontend-build")});
+});
+
+app.get(`/${admin_url}`, (req, res) => {
+	res.sendFile("admin.html", {root: path.join(__dirname,"frontend-build")});
+});
 
 
 app.get("/api/", async (request, response) => {
@@ -78,6 +90,10 @@ app.get("/api/categories", (req, res) => {
 app.get("/api/pools", (req, res) => {
 	res.json(pools_names);
 });
+
+app.get("*", (req, res) => {
+	res.status(404).send("404");
+})
 
 //after this: password-protected endpoints
 app.post("/*", (request, response, next) => {
