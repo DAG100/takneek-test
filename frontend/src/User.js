@@ -4,26 +4,12 @@ import Button from "react-bootstrap/Button";
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Form from "react-bootstrap/Form";
 
 import "./App.css";
 
 function App() {
 	const [leaderboard, setLeaderboard] = useState("error");
 	const [refresh, setRefresh] = useState(false); //toggle for refreshing
-	const [formData, setFormData] = useState({
-		password: "",
-		eventname: "",
-		eventcategory: "",
-		poolpoints: {
-			Peshwas: 0,
-			Aryans: 0,
-			Nawabs: 0,
-			Shauryas: 0,
-			Kshatriyas: 0
-		}
-	})
-	const [response, setResponse] = useState("");
 	useEffect(() => {
 		(async () => {
 			//structure of leaderboard at end:
@@ -33,9 +19,12 @@ function App() {
 // 				leaderboard: {
 // 						category_name: [
 // 							{
+//								_id,
 // 								eventname, 
 // 								pointspoints: {
-// 								pool: points
+// 									pool: points
+//								},
+//								link
 // 							}
 // 						}
 // 					]
@@ -48,20 +37,36 @@ function App() {
 				const data = await (await fetch("/api/")).json();
 				let temp_leaderboard = {};
 				let temp_total = {};
+				let temp_category_totals = {};
 				for (const event_category of categories) {
 					temp_leaderboard[event_category] = [];
+					temp_category_totals[event_category] = {};
 				}
 				for (const pool of pools) {
 					temp_total[pool] = 0;
+					for (const event_category of categories) {
+						temp_category_totals[event_category][pool] = 0;
+					}
 				}
 				for (const event of data) {
 					temp_leaderboard[event.eventcategory].push({
+						_id: event._id,
 						eventname: event.eventname, 
-						poolpoints: event.poolpoints
+						poolpoints: event.poolpoints,
+						link: event.link === undefined ? "" : event.link
 					});
 					for (const pool of pools) {
 						temp_total[pool] += event.poolpoints[pool];
+						temp_category_totals[event.eventcategory][pool] += event.poolpoints[pool];
 					}
+				}
+				for (const event_category of categories) {
+					temp_leaderboard[event_category].push({
+						_id: "",
+						eventname: "Total",
+						poolpoints: temp_category_totals[event_category],
+						link: ""
+					})
 				}
 				setLeaderboard({
 					categories: categories,
@@ -87,21 +92,31 @@ function App() {
 	);
 	else return (
 		<div className="main">
+		<h2>SnT Council</h2>
+		<h1>Takneek</h1> 
 		<Container>
-			<Row>
-				<Col>Event</Col>
-				{leaderboard.pools.map(el => (
-					<Col>{el}</Col>
+			<Row className="table-head">
+				<Col sm={12} md={3}>Problem Statement</Col>
+				<Col sm={12} md={9}>
+				<Row style={{padding:0}}>
+				{leaderboard.pools.map((el, index) => (
+					<Col style={{padding: 0}} xs={{offset: (index === 0 ? 2 : 0)}} sm={{offset: (index === 0 ? 2 : 0)}} md={{offset: 0}}>{el}</Col>
 				))}
+				</Row>
+				</Col>
 			</Row>
 			{leaderboard.categories.map(event_category => (
 				<Row>
-					<Col sm={1}>{event_category}</Col>
-					<Col sm={11} style={{padding: 0}}>
+					<Col sm={12} md={1}>{event_category}</Col>
+					<Col sm={12} md={11} style={{padding: 0}}>
 						<Container style={{width: "100%"}}>
 							{leaderboard.leaderboard[event_category].map(event => (
 								<Row>
-									<Col style={{flexBasis:"9%", flexGrow:"0"}}>{event.eventname}</Col>
+									<Col className="row-head">
+									{event.link === "" 
+									? event.eventname 
+									: (<a href={event.link} target="_blank" rel="noreferrer">{event.eventname}</a>)}
+									</Col>
 									{Object.entries(event.poolpoints).map(el => (
 											<Col>{el[1]}</Col>
 										))}
@@ -112,58 +127,19 @@ function App() {
 				</Row>
 			))}
 			<Row>
-				<Col>Total</Col>
-				{Object.entries(leaderboard.total).map(el => <Col>{el[1]}</Col>)}
+				<Col sm={12} md={3}>Total</Col>
+				<Col sm={12} md={9} style={{padding:0}}>
+				<Row style={{padding:0}}>
+				{Object.entries(leaderboard.total).map((el, index) => <Col xs={{offset: (index === 0 ? 2 : 0)}} sm={{offset: (index === 0 ? 2 : 0)}} md={{offset: 0}}>{el[1]}</Col>)}
+				</Row></Col>
 			</Row>
 		</Container>
+		
+		
+		
 		<Button onClick={() => {setRefresh(!refresh);}}>Refresh</Button>
-		<p>Add event:</p>
-		<Container>
-			<Row>
-				<Col sm={1}><Form.Group>
-					<Form.Label >Event Category</Form.Label>
-					<Form.Select value={formData.eventcategory} onChange={(event) => {setFormData({...formData, eventcategory:event.target.value})}}>
-						<option value="">---</option>
-						{leaderboard.categories.map(el => (
-							<option value={el}>{el}</option>
-						))}
-					</Form.Select>
-				</Form.Group></Col>
-				<Col sm={1}><Form.Group>
-					<Form.Label>Event Name</Form.Label>
-					<Form.Control type="text" placeholder="test" value={formData.eventname} onChange={(event) => {setFormData({...formData, eventname: event.target.value})}}/>
-				</Form.Group></Col>
-				{leaderboard.pools.map(el => (
-				<Col><Form.Group>
-					<Form.Label>{el} Points</Form.Label>
-					<Form.Control type="number" placeholder="" value={formData.poolpoints[el]} onChange={(event) => {
-					let newpoolpoints = formData.poolpoints;
-					newpoolpoints[el] = event.target.value
-					setFormData({
-						...formData, 
-						poolpoints: newpoolpoints
-					})
-					}} />
-				</Form.Group></Col>
-				))}
-			</Row>
-		</Container>
-		<Form.Control type="password" placeholder="Admin Password" value={formData.password} onChange={(event) => {setFormData({...formData, password:event.target.value})}}/>
-		<Button onClick={() => {
-			console.log(formData);
-			setResponse("Waiting...");
-			(async () => {
-				const temp = await (await fetch("/api/", {
-					method: "POST",
-					mode: "cors",
-					headers: {"Content-Type":"application/json"},
-					body: JSON.stringify(formData)
-				})).json();
-				setResponse(temp[0]);
-				setRefresh(!refresh); //refresh leaderboard
-			})();
-		}}>Submit</Button>
-		<p>{response}</p>
+		
+		
 		</div>
 	);
 }

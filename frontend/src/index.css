@@ -1,8 +1,142 @@
-body {
-  background-color: #bbb;
+* {
+	--border-size: 1px;
+	--border-radius: 5px;
+	--border-color: #0ff;
+	--background-color-dark: #021826;
+	--background-color-light: #04212f;
+	font-variant-caps: small-caps;
+	font-family:sans-serif;
+	color:white;
+/* 	border: solid #fff 1px !important; */
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+
+:root {
+	font-size: 14pt;
+}
+
+@media (max-width: 1200px) {
+	:root {
+		font-size: 12pt;
+	}
+}
+
+@media (max-width: 1000px) {
+	:root {
+		font-size: 10pt;
+	}
+}
+
+body {
+	background-color: #020909 !important;
+}
+
+div {
+	color: #0ff;
+}
+
+a {
+	color: #f0f !important;
+}
+
+.btn {
+	background-color: #112 !important;
+	border-color: var(--border-color) !important;
+	color: var(--border-color) !important;
+}
+
+.main {
+	width: 100%;
+	margin: auto;
+	padding: 20px;
+	min-width: 576px;
+}
+
+.main > * {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.main h2 {
+	color:#0ff;
+	text-align:center;
+}
+
+.main h1 {
+	color:#0ff;
+	text-align:center;
+/* 	font-family:"BankGothic"; */
+}
+
+.container {
+/* 	border: solid #000; */
+/* 	border-width: var(--border-size); */
+/* 	background-color: white; */
+	height: 100%;
+	border-radius: var(--border-radius);
+	font-size: 1.2rem;
+}
+
+.container .container {
+	padding: 0px;
+}
+
+.row-head {
+	max-width: 18% !important;
+	flex-basis: 18% !important;
+	flex-grow: 0 !important;
+}
+
+.row .container {
+	border:none;
+}
+
+
+.row {
+	border-style: solid;
+	border-color: var(--border-color);
+	border-width: var(--border-size);
+ 	border-radius: var(--border-radius);
+ 	color:#0ff;
+ 	margin: 15px;
+/* 
+	border-left: none;
+	border-right: none;
+	border-bottom: none;
+ */
+}
+
+
+.row .row {
+	border: none;
+	margin: 0px;
+}
+
+.main > .container > .row {
+	filter: drop-shadow(0 0 var(--border-radius) #0ff);
+}
+
+.main > .container > .row:nth-child(2n) {
+	background-color: var(--background-color-light);
+}
+
+.main > .container > .row:nth-child(2n-1) {
+	background-color: var(--background-color-dark);
+}
+
+.main > .container > .row:first-child {
+	border-top-left-radius: var(--border-radius);
+	border-top-right-radius: var(--border-radius);
+	filter: drop-shadow(0 0 var(--border-radius) #d00cfc);
+	background-color: #420055;
+	border-color: #d00cfc;
+	font-variant-caps: small-caps;
+}
+
+.table-head div {
+	color:#f0f !important;
+}
+
+.main > .container > .row:first-child > div {
+	color:#f0f;
 }
